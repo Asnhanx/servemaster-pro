@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #ccff00;
+  --color-primary-hover: #b3e600;
+  --color-primary-dark: #b3e600;
+  --color-background-light: #f6f7f8;
+  --color-background-dark: #0a0a0a;
+  --color-surface-dark: #121212;
+  --color-surface-border: #27272a;
+  --color-border-dark: #2A2A2A;
+  --color-text-main: #ffffff;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #a1a1aa;
+  --color-text-light: #ffffff;
+
+  --font-display: "Noto Sans SC", sans-serif;
+  --font-body: "Noto Sans SC", sans-serif;
+  --font-sans: "Inter", "Noto Sans SC", sans-serif;
+}
+
+@layer utilities {
+  .bg-blueprint {
+      background-size: 40px 40px;
+      background-image: linear-gradient(to right, var(--color-border-dark) 1px, transparent 1px), linear-gradient(to bottom, var(--color-border-dark) 1px, transparent 1px);
+  }
+  .text-glow {
+      text-shadow: 0 0 10px rgba(204, 255, 0, 0.5);
+  }
+  .border-glow {
+      box-shadow: 0 0 15px rgba(204, 255, 0, 0.15);
+  }
+  .text-shadow {
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  }
+  .mesh-gradient {
+      background-color: #121212;
+      background-image: 
+          radial-gradient(at 0% 0%, hsla(0, 0%, 15%, 0.4) 0, transparent 50%), 
+          radial-gradient(at 100% 0%, hsla(0, 0%, 12%, 0.2) 0, transparent 50%), 
+          radial-gradient(at 100% 100%, hsla(0, 0%, 8%, 1) 0, transparent 50%), 
+          radial-gradient(at 0% 100%, hsla(0, 0%, 10%, 0.5) 0, transparent 50%);
+  }
+  .text-gradient {
+      background: linear-gradient(to right, #ffffff, #ccff00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+  }
+  .glass-panel {
+      background: rgba(18, 18, 18, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-background-dark);
+  color: var(--color-text-main);
+}
