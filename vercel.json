@@ -1,12 +1,13 @@
 {
+    "framework": "vite",
     "rewrites": [
         {
             "source": "/api/chat/limit",
             "destination": "/api/chat-limit"
         },
         {
-            "source": "/api/chat",
-            "destination": "/api/chat"
+            "source": "/((?!api/).*)",
+            "destination": "/index.html"
         }
     ]
 }
