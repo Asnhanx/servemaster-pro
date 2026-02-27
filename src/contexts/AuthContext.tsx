@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, Session, AuthError } from '@supabase/supabase-js';
+import { User, Session, AuthError, Provider } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 
 interface AuthContextType {
@@ -9,6 +9,10 @@ interface AuthContextType {
     signUp: (email: string, password: string, username: string) => Promise<{ error: AuthError | null }>;
     signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
     signOut: () => Promise<void>;
+    sendPhoneOtp: (phone: string) => Promise<{ error: AuthError | null }>;
+    verifyPhoneOtp: (phone: string, token: string) => Promise<{ error: AuthError | null }>;
+    signUpWithPhone: (phone: string, token: string, username: string) => Promise<{ error: AuthError | null }>;
+    signInWithSocial: (provider: Provider) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -57,12 +61,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error };
     };
 
+    const sendPhoneOtp = async (phone: string) => {
+        const { error } = await supabase.auth.signInWithOtp({ phone });
+        return { error };
+    };
+
+    const verifyPhoneOtp = async (phone: string, token: string) => {
+        const { error } = await supabase.auth.verifyOtp({
+            phone,
+            token,
+            type: 'sms',
+        });
+        return { error };
+    };
+
+    const signUpWithPhone = async (phone: string, token: string, username: string) => {
+        const { error } = await supabase.auth.verifyOtp({
+            phone,
+            token,
+            type: 'sms',
+        });
+        if (error) return { error };
+
+        // Update user metadata with username after successful verification
+        const { error: updateError } = await supabase.auth.updateUser({
+            data: { username },
+        });
+        return { error: updateError };
+    };
+
+    const signInWithSocial = async (provider: Provider) => {
+        await supabase.auth.signInWithOAuth({
+            provider,
+            options: {
+                redirectTo: window.location.origin,
+            },
+        });
+    };
+
     const signOut = async () => {
         await supabase.auth.signOut();
     };
 
     return (
-        <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signOut }}>
+        <AuthContext.Provider value={{
+            user, session, loading,
+            signUp, signIn, signOut,
+            sendPhoneOtp, verifyPhoneOtp, signUpWithPhone,
+            signInWithSocial,
+        }}>
             {children}
         </AuthContext.Provider>
     );

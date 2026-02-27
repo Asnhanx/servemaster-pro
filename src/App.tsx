@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -13,25 +13,36 @@ import AppControl from './pages/AppControl';
 import Support from './pages/Support';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import AIChat from './pages/AIChat';
+
+function AppLayout() {
+  const location = useLocation();
+  const isChat = location.pathname === '/chat';
+
+  return (
+    <div className="min-h-screen flex flex-col bg-background-dark text-text-main">
+      {!isChat && <Header />}
+      <main className="flex-grow flex flex-col">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/product" element={<Product />} />
+          <Route path="/app" element={<AppControl />} />
+          <Route path="/support" element={<Support />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/chat" element={<AIChat />} />
+        </Routes>
+      </main>
+      {!isChat && <Footer />}
+    </div>
+  );
+}
 
 export default function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="min-h-screen flex flex-col bg-background-dark text-text-main">
-          <Header />
-          <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/product" element={<Product />} />
-              <Route path="/app" element={<AppControl />} />
-              <Route path="/support" element={<Support />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+        <AppLayout />
       </Router>
     </AuthProvider>
   );

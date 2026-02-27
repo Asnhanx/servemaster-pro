@@ -7,6 +7,7 @@ import express from 'express';
 import cors from 'cors';
 import ordersRouter from './routes/orders';
 import supportRouter from './routes/support';
+import chatRouter from './routes/chat';
 
 const app = express();
 const PORT = process.env.SERVER_PORT || 3001;
@@ -30,6 +31,7 @@ app.get('/api/health', (_req, res) => {
 // Routes
 app.use('/api/orders', ordersRouter);
 app.use('/api/support', supportRouter);
+app.use('/api/chat', chatRouter);
 
 // 404 handler
 app.use('/api/*', (_req, res) => {
