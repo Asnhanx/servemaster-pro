@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
-import type { VercelRequest } from '@vercel/node';
+// Shared constants and helpers for Vercel serverless functions
+// This file is imported by chat.ts and chat-limit.ts
 
 // ===================== CONFIGURATION =====================
 export const MAX_INPUT_LENGTH = 500;
@@ -10,24 +10,22 @@ export const USER_DAILY_LIMIT = 20;
 export const RATE_WINDOW_MS = 2000;
 
 // ===================== RATE LIMITING STORE =====================
-// In-memory stores (per serverless instance, reset on cold start)
-const guestCounters = new Map<string, { count: number; lastRequest: number }>();
-const userDailyCounters = new Map<string, { count: number; date: string }>();
-const lastRequestTime = new Map<string, number>();
+const guestCounters: Record<string, { count: number; lastRequest: number }> = {};
+const userDailyCounters: Record<string, { count: number; date: string }> = {};
+const lastRequestTime: Record<string, number> = {};
 
 export function getTodayStr(): string {
     return new Date().toISOString().split('T')[0];
 }
 
-export function getClientIp(req: VercelRequest): string {
-    const xff = req.headers['x-forwarded-for'];
+export function getClientIp(headers: Record<string, string | string[] | undefined>): string {
+    const xff = headers['x-forwarded-for'];
     if (typeof xff === 'string') return xff.split(',')[0].trim();
-    if (Array.isArray(xff)) return xff[0];
-    return req.socket?.remoteAddress || 'unknown';
+    if (Array.isArray(xff) && xff.length > 0) return xff[0];
+    return 'unknown';
 }
 
-export async function getUserId(req: VercelRequest): Promise<string | null> {
-    const authHeader = req.headers.authorization;
+export async function getUserIdFromHeader(authHeader: string | undefined): Promise<string | null> {
     if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
 
     const token = authHeader.split(' ')[1];
@@ -36,8 +34,15 @@ export async function getUserId(req: VercelRequest): Promise<string | null> {
     if (!supabaseUrl || !supabaseKey) return null;
 
     try {
-        const supabase = createClient(supabaseUrl, supabaseKey);
-        const { data: { user } } = await supabase.auth.getUser(token);
+        // Use fetch directly instead of @supabase/supabase-js to avoid dependency issues
+        const resp = await fetch(`${supabaseUrl}/auth/v1/user`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'apikey': supabaseKey,
+            },
+        });
+        if (!resp.ok) return null;
+        const user = await resp.json();
         return user?.id || null;
     } catch {
         return null;
@@ -50,18 +55,18 @@ export function checkRateLimit(userId: string | null, clientIp: string): {
     const clientKey = userId || `ip:${clientIp}`;
     const now = Date.now();
 
-    const last = lastRequestTime.get(clientKey) || 0;
+    const last = lastRequestTime[clientKey] || 0;
     if (now - last < RATE_WINDOW_MS) {
         const limit = userId ? USER_DAILY_LIMIT : GUEST_MESSAGE_LIMIT;
         return { allowed: false, remaining: 0, limit, error: '请求过于频繁，请稍后再试。' };
     }
-    lastRequestTime.set(clientKey, now);
+    lastRequestTime[clientKey] = now;
 
     if (userId) {
         const today = getTodayStr();
-        const counter = userDailyCounters.get(userId);
+        const counter = userDailyCounters[userId];
         if (!counter || counter.date !== today) {
-            userDailyCounters.set(userId, { count: 1, date: today });
+            userDailyCounters[userId] = { count: 1, date: today };
             return { allowed: true, remaining: USER_DAILY_LIMIT - 1, limit: USER_DAILY_LIMIT };
         }
         if (counter.count >= USER_DAILY_LIMIT) {
@@ -70,9 +75,9 @@ export function checkRateLimit(userId: string | null, clientIp: string): {
         counter.count++;
         return { allowed: true, remaining: USER_DAILY_LIMIT - counter.count, limit: USER_DAILY_LIMIT };
     } else {
-        const counter = guestCounters.get(clientIp);
+        const counter = guestCounters[clientIp];
         if (!counter) {
-            guestCounters.set(clientIp, { count: 1, lastRequest: now });
+            guestCounters[clientIp] = { count: 1, lastRequest: now };
             return { allowed: true, remaining: GUEST_MESSAGE_LIMIT - 1, limit: GUEST_MESSAGE_LIMIT };
         }
         if (counter.count >= GUEST_MESSAGE_LIMIT) {
@@ -87,11 +92,11 @@ export function checkRateLimit(userId: string | null, clientIp: string): {
 export function getRateLimitInfo(userId: string | null, clientIp: string) {
     if (userId) {
         const today = getTodayStr();
-        const counter = userDailyCounters.get(userId);
+        const counter = userDailyCounters[userId];
         const used = (counter && counter.date === today) ? counter.count : 0;
         return { limit: USER_DAILY_LIMIT, remaining: USER_DAILY_LIMIT - used, isGuest: false };
     } else {
-        const counter = guestCounters.get(clientIp);
+        const counter = guestCounters[clientIp];
         const used = counter ? counter.count : 0;
         return { limit: GUEST_MESSAGE_LIMIT, remaining: GUEST_MESSAGE_LIMIT - used, isGuest: true };
     }

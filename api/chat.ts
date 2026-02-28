@@ -1,15 +1,14 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import {
-    getUserId, getClientIp, checkRateLimit,
+    getUserIdFromHeader, getClientIp, checkRateLimit,
     MAX_INPUT_LENGTH, MAX_TOKENS_RESPONSE, MAX_HISTORY_MESSAGES, SYSTEM_PROMPT
 } from './_shared';
 
 export const config = {
-    maxDuration: 60, // Allow up to 60s for streaming
+    maxDuration: 60,
 };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-    // CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     if (req.method === 'OPTIONS') return res.status(200).end();
@@ -28,32 +27,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: '请求格式错误' });
     }
 
-    // Auth & rate limiting
-    const userId = await getUserId(req);
-    const clientIp = getClientIp(req);
-    const rateCheck = checkRateLimit(userId, clientIp);
-
-    if (!rateCheck.allowed) {
-        return res.status(429).json({ error: rateCheck.error, remaining: rateCheck.remaining, limit: rateCheck.limit });
-    }
-
-    // Input validation
-    const lastMessage = messages[messages.length - 1];
-    if (lastMessage?.content?.length > MAX_INPUT_LENGTH) {
-        return res.status(400).json({ error: `消息长度不能超过 ${MAX_INPUT_LENGTH} 个字符。` });
-    }
-
-    // Truncate & build messages
-    const recentMessages = messages.slice(-MAX_HISTORY_MESSAGES);
-    const fullMessages = [
-        { role: 'system', content: SYSTEM_PROMPT },
-        ...recentMessages.map((m: { role: string; content: string }) => ({
-            role: m.role,
-            content: m.content.slice(0, MAX_INPUT_LENGTH),
-        })),
-    ];
-
     try {
+        const userId = await getUserIdFromHeader(req.headers.authorization as string | undefined);
+        const clientIp = getClientIp(req.headers as Record<string, string | string[] | undefined>);
+        const rateCheck = checkRateLimit(userId, clientIp);
+
+        if (!rateCheck.allowed) {
+            return res.status(429).json({ error: rateCheck.error, remaining: rateCheck.remaining, limit: rateCheck.limit });
+        }
+
+        // Input validation
+        const lastMessage = messages[messages.length - 1];
+        if (lastMessage?.content?.length > MAX_INPUT_LENGTH) {
+            return res.status(400).json({ error: `消息长度不能超过 ${MAX_INPUT_LENGTH} 个字符。` });
+        }
+
+        // Truncate & build messages
+        const recentMessages = messages.slice(-MAX_HISTORY_MESSAGES);
+        const fullMessages = [
+            { role: 'system', content: SYSTEM_PROMPT },
+            ...recentMessages.map((m: { role: string; content: string }) => ({
+                role: m.role,
+                content: (m.content || '').slice(0, MAX_INPUT_LENGTH),
+            })),
+        ];
+
         // SSE headers
         res.setHeader('Content-Type', 'text/event-stream');
         res.setHeader('Cache-Control', 'no-cache');
@@ -132,7 +130,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     } catch (err) {
         console.error('Chat proxy error:', err);
         if (!res.headersSent) {
-            return res.status(500).json({ error: 'AI 服务请求失败' });
+            return res.status(500).json({ error: 'AI 服务请求失败', detail: String(err) });
         }
         res.write(`data: ${JSON.stringify({ error: '连接中断' })}\n\n`);
         res.write('data: [DONE]\n\n');
