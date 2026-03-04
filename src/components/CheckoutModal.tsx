@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '../i18n';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface CheckoutModalProps {
 
 export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
   const { user, session } = useAuth();
+  const { t } = useLanguage();
   const [step, setStep] = useState<'cart' | 'payment' | 'success'>('cart');
   const [paymentMethod, setPaymentMethod] = useState<'alipay' | 'wechat' | 'applepay' | 'card'>('alipay');
   const [orderNumber, setOrderNumber] = useState('');
@@ -28,7 +30,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
   const handleNext = async () => {
     if (step === 'cart') {
       if (!user) {
-        setOrderError('请先登录后再进行购买');
+        setOrderError(t.checkout.loginRequired);
         return;
       }
       setStep('payment');
@@ -52,7 +54,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
         const data = await response.json();
 
         if (!response.ok) {
-          setOrderError(data.error || '创建订单失败');
+          setOrderError(data.error || t.checkout.orderFailed);
           setOrderLoading(false);
           return;
         }
@@ -60,7 +62,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
         setOrderNumber(data.order.order_number);
         setStep('success');
       } catch {
-        setOrderError('网络错误，请稍后重试');
+        setOrderError(t.support.networkError);
       } finally {
         setOrderLoading(false);
       }
@@ -88,9 +90,9 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
             {/* Header */}
             <div className="flex justify-between items-center p-6 border-b border-surface-border">
               <h3 className="text-xl font-bold text-white">
-                {step === 'cart' && '确认订单'}
-                {step === 'payment' && '选择支付方式'}
-                {step === 'success' && '支付成功'}
+                {step === 'cart' && t.checkout.titleCart}
+                {step === 'payment' && t.checkout.titlePayment}
+                {step === 'success' && t.checkout.titleSuccess}
               </h3>
               <button
                 onClick={onClose}
@@ -109,8 +111,8 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                       <img src="https://images.unsplash.com/photo-1522778147829-047360bdc7f6?q=80&w=200&auto=format&fit=crop" alt="ServeMaster Pro" className="w-full h-full object-cover opacity-80" referrerPolicy="no-referrer" />
                     </div>
                     <div className="flex-grow">
-                      <h4 className="font-bold text-lg text-white">ServeMaster Pro</h4>
-                      <p className="text-sm text-text-secondary mb-2">智能网球发球机 (SMP-2024)</p>
+                      <h4 className="font-bold text-lg text-white">{t.checkout.productName}</h4>
+                      <p className="text-sm text-text-secondary mb-2">{t.checkout.productDesc}</p>
                       <div className="flex justify-between items-center">
                         <span className="text-primary font-mono font-bold">¥8,999</span>
                         <span className="text-sm text-text-secondary">x 1</span>
@@ -120,19 +122,19 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
 
                   <div className="space-y-3 bg-background-dark p-6 rounded-2xl border border-surface-border">
                     <div className="flex justify-between text-sm">
-                      <span className="text-text-secondary">商品总价</span>
+                      <span className="text-text-secondary">{t.checkout.subtotal}</span>
                       <span>¥8,999</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-text-secondary">运费</span>
-                      <span>免运费</span>
+                      <span className="text-text-secondary">{t.checkout.shipping}</span>
+                      <span>{t.checkout.freeShipping}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-text-secondary">优惠</span>
+                      <span className="text-text-secondary">{t.checkout.discount}</span>
                       <span className="text-primary">- ¥0</span>
                     </div>
                     <div className="pt-3 border-t border-surface-border flex justify-between items-center">
-                      <span className="font-bold">应付总额</span>
+                      <span className="font-bold">{t.checkout.total}</span>
                       <span className="text-2xl font-mono font-bold text-primary">¥8,999</span>
                     </div>
                   </div>
@@ -142,14 +144,14 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                     <div className="p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-xl text-yellow-400 text-sm flex items-center justify-between">
                       <div className="flex items-center">
                         <span className="material-symbols-outlined mr-2 text-lg">info</span>
-                        请先登录后再进行购买
+                        {t.checkout.loginRequired}
                       </div>
                       <Link
                         to="/login"
                         onClick={onClose}
                         className="text-primary hover:text-primary-hover font-bold transition-colors"
                       >
-                        去登录
+                        {t.checkout.goToLogin}
                       </Link>
                     </div>
                   )}
@@ -159,7 +161,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
               {step === 'payment' && (
                 <div className="space-y-4">
                   <div className="text-center mb-8">
-                    <p className="text-text-secondary mb-2">支付金额</p>
+                    <p className="text-text-secondary mb-2">{t.checkout.payAmount}</p>
                     <p className="text-4xl font-mono font-bold text-primary">¥8,999</p>
                   </div>
 
@@ -179,8 +181,8 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                         <span className="material-symbols-outlined text-[#1677FF]">payments</span>
                       </div>
                       <div className="text-left">
-                        <div className="font-bold text-white">支付宝</div>
-                        <div className="text-xs text-text-secondary">推荐使用</div>
+                        <div className="font-bold text-white">{t.checkout.alipay}</div>
+                        <div className="text-xs text-text-secondary">{t.checkout.recommended}</div>
                       </div>
                       {paymentMethod === 'alipay' && (
                         <span className="material-symbols-outlined text-primary ml-auto">check_circle</span>
@@ -195,8 +197,8 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                         <span className="material-symbols-outlined text-[#09B83E]">forum</span>
                       </div>
                       <div className="text-left">
-                        <div className="font-bold text-white">微信支付</div>
-                        <div className="text-xs text-text-secondary">亿万用户的选择</div>
+                        <div className="font-bold text-white">{t.checkout.wechat}</div>
+                        <div className="text-xs text-text-secondary">{t.checkout.wechatDesc}</div>
                       </div>
                       {paymentMethod === 'wechat' && (
                         <span className="material-symbols-outlined text-primary ml-auto">check_circle</span>
@@ -212,7 +214,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                       </div>
                       <div className="text-left">
                         <div className="font-bold text-white">Apple Pay</div>
-                        <div className="text-xs text-text-secondary">安全快捷</div>
+                        <div className="text-xs text-text-secondary">{t.checkout.applePayDesc}</div>
                       </div>
                       {paymentMethod === 'applepay' && (
                         <span className="material-symbols-outlined text-primary ml-auto">check_circle</span>
@@ -227,8 +229,8 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                         <span className="material-symbols-outlined text-purple-500">credit_card</span>
                       </div>
                       <div className="text-left">
-                        <div className="font-bold text-white">信用卡/借记卡</div>
-                        <div className="text-xs text-text-secondary">支持 Visa/Mastercard</div>
+                        <div className="font-bold text-white">{t.checkout.card}</div>
+                        <div className="text-xs text-text-secondary">{t.checkout.cardDesc}</div>
                       </div>
                       {paymentMethod === 'card' && (
                         <span className="material-symbols-outlined text-primary ml-auto">check_circle</span>
@@ -243,18 +245,18 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                   <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center mb-6">
                     <span className="material-symbols-outlined text-5xl text-primary">check_circle</span>
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">支付成功！</h3>
+                  <h3 className="text-2xl font-bold text-white mb-2">{t.checkout.successTitle}</h3>
                   <p className="text-text-secondary max-w-sm mb-8">
-                    感谢您的购买。您的订单已确认，我们将尽快为您安排发货。订单详情已发送至您的邮箱。
+                    {t.checkout.successDesc}
                   </p>
                   <div className="bg-background-dark p-4 rounded-xl border border-surface-border w-full max-w-sm text-left">
                     <div className="flex justify-between text-sm mb-2">
-                      <span className="text-text-secondary">订单编号</span>
+                      <span className="text-text-secondary">{t.checkout.orderNumber}</span>
                       <span className="font-mono">{orderNumber}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-text-secondary">预计发货</span>
-                      <span>48小时内</span>
+                      <span className="text-text-secondary">{t.checkout.estimatedShipping}</span>
+                      <span>{t.checkout.shippingTime}</span>
                     </div>
                   </div>
                 </div>
@@ -268,7 +270,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                   onClick={onClose}
                   className="px-6 py-3 rounded-xl font-bold text-text-secondary hover:text-white transition-colors"
                 >
-                  取消
+                  {t.checkout.cancel}
                 </button>
               )}
 
@@ -278,7 +280,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                   disabled={!user}
                   className="bg-primary text-black px-8 py-3 rounded-xl font-bold hover:bg-primary-hover transition-all transform hover:scale-105 shadow-[0_0_15px_rgba(204,255,0,0.3)] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 >
-                  去结算
+                  {t.checkout.proceedToCheckout}
                 </button>
               )}
 
@@ -294,12 +296,12 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      处理中...
+                      {t.checkout.processing}
                     </>
                   ) : (
                     <>
                       <span className="material-symbols-outlined mr-2 text-sm">lock</span>
-                      安全支付 ¥8,999
+                      {t.checkout.paySecurely.replace('{amount}', '¥8,999')}
                     </>
                   )}
                 </button>
@@ -310,7 +312,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
                   onClick={onClose}
                   className="w-full bg-primary text-black px-8 py-3 rounded-xl font-bold hover:bg-primary-hover transition-all transform hover:scale-105 shadow-[0_0_15px_rgba(204,255,0,0.3)]"
                 >
-                  完成
+                  {t.checkout.done}
                 </button>
               )}
             </div>

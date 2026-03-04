@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, FormEvent, KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../i18n';
 
 const MAX_INPUT_LENGTH = 500;
 
@@ -19,11 +20,12 @@ interface RateLimitInfo {
 
 export default function AIChat() {
     const { session } = useAuth();
+    const { t } = useLanguage();
     const [messages, setMessages] = useState<Message[]>([
         {
             id: 'welcome',
             role: 'assistant',
-            content: '您好！我是 ServeMaster Pro 智能客服助手 🎾\n\n我可以帮助您解答有关发球机的使用、连接、充电、故障排除和保修等问题。请问有什么可以帮到您的？',
+            content: t.aiChat.welcomeMsg,
         },
     ]);
     const [input, setInput] = useState('');
@@ -83,8 +85,8 @@ export default function AIChat() {
         // Check if rate limited
         if (rateLimitInfo && rateLimitInfo.remaining <= 0) {
             setRateLimitError(rateLimitInfo.isGuest
-                ? '未登录用户提问次数已用完，请登录后继续使用。'
-                : '今日提问次数已达上限，请明天再来。');
+                ? t.aiChat.limitGuest
+                : t.aiChat.limitUser);
             return;
         }
 
@@ -125,7 +127,7 @@ export default function AIChat() {
                 setMessages(prev =>
                     prev.map(m =>
                         m.id === assistantId
-                            ? { ...m, content: err.error || '抱歉，服务暂时不可用。' }
+                            ? { ...m, content: err.error || t.aiChat.serviceError }
                             : m,
                     ),
                 );
@@ -191,7 +193,7 @@ export default function AIChat() {
             setMessages(prev =>
                 prev.map(m =>
                     m.id === assistantId
-                        ? { ...m, content: '网络连接出错，请稍后重试。' }
+                        ? { ...m, content: t.aiChat.networkError }
                         : m,
                 ),
             );
@@ -222,10 +224,10 @@ export default function AIChat() {
                             <span className="material-symbols-outlined text-text-secondary">arrow_back</span>
                         </Link>
                         <div>
-                            <h1 className="font-display font-bold text-lg">AI 智能客服</h1>
+                            <h1 className="font-display font-bold text-lg">{t.aiChat.title}</h1>
                             <div className="flex items-center space-x-2 text-xs text-text-secondary">
                                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                                <span>在线 · 随时为您解答</span>
+                                <span>{t.aiChat.statusOnline}</span>
                             </div>
                         </div>
                     </div>
@@ -238,8 +240,8 @@ export default function AIChat() {
                                     ? 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400'
                                     : 'border-surface-border bg-background-dark text-text-secondary'
                                 }`}>
-                                剩余 {rateLimitInfo.remaining}/{rateLimitInfo.limit} 次
-                                {rateLimitInfo.isGuest && <span className="ml-1 opacity-60 hidden sm:inline">· 游客</span>}
+                                {t.aiChat.remainLimit.replace('{remaining}', rateLimitInfo.remaining.toString()).replace('{limit}', rateLimitInfo.limit.toString())}
+                                {rateLimitInfo.isGuest && <span className="ml-1 opacity-60 hidden sm:inline">· {t.aiChat.guestBadge}</span>}
                             </div>
                         )}
                         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -301,7 +303,7 @@ export default function AIChat() {
                         <span>{rateLimitError}</span>
                         {rateLimitInfo?.isGuest && (
                             <Link to="/login" className="ml-auto text-primary hover:text-primary-hover font-bold">
-                                去登录 →
+                                {t.aiChat.goToLogin}
                             </Link>
                         )}
                     </div>
@@ -318,7 +320,7 @@ export default function AIChat() {
                                 value={input}
                                 onChange={e => setInput(e.target.value.slice(0, MAX_INPUT_LENGTH))}
                                 onKeyDown={handleKeyDown}
-                                placeholder={isAtLimit ? '提问次数已用完' : '输入您的问题...'}
+                                placeholder={isAtLimit ? t.aiChat.limitPlaceholder : t.aiChat.inputPlaceholder}
                                 rows={1}
                                 disabled={isStreaming || isAtLimit}
                                 maxLength={MAX_INPUT_LENGTH}
@@ -341,7 +343,7 @@ export default function AIChat() {
                         </button>
                     </div>
                     <p className="text-xs text-text-secondary/50 mt-2 text-center hidden sm:block">
-                        AI 回复仅供参考，如需更专业的帮助，请提交工单联系人工客服。
+                        {t.aiChat.disclaimer}
                     </p>
                 </form>
             </div>

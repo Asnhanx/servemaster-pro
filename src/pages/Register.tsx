@@ -3,12 +3,14 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import LegalModal from '../components/LegalModal';
+import { useLanguage } from '../i18n';
 
 type AuthMode = 'email' | 'phone';
 
 export default function Register() {
   const navigate = useNavigate();
   const { signUp, sendPhoneOtp, signUpWithPhone, signInWithSocial } = useAuth();
+  const { t } = useLanguage();
 
   // Shared state
   const [authMode, setAuthMode] = useState<AuthMode>('email');
@@ -43,17 +45,17 @@ export default function Register() {
     setError('');
 
     if (password.length < 8) {
-      setError('密码长度至少为 8 位');
+      setError(t.auth.passwordLength);
       return;
     }
 
     if (password !== confirmPassword) {
-      setError('两次输入的密码不一致');
+      setError(t.auth.passwordMismatch);
       return;
     }
 
     if (!agreed) {
-      setError('请阅读并同意服务条款和隐私政策');
+      setError(t.auth.termsRequired);
       return;
     }
 
@@ -63,7 +65,7 @@ export default function Register() {
       const { error: authError } = await signUp(email, password, username);
       if (authError) {
         if (authError.message.includes('already registered')) {
-          setError('该邮箱已被注册，请直接登录');
+          setError(t.auth.emailTaken);
         } else {
           setError(authError.message);
         }
@@ -71,7 +73,7 @@ export default function Register() {
         navigate('/');
       }
     } catch {
-      setError('注册失败，请稍后重试');
+      setError(t.auth.registerFailed);
     } finally {
       setLoading(false);
     }
@@ -79,7 +81,7 @@ export default function Register() {
 
   const handleSendOtp = async () => {
     if (!phone.trim()) {
-      setError('请输入手机号码');
+      setError(t.auth.phoneRequired);
       return;
     }
     setError('');
@@ -89,13 +91,13 @@ export default function Register() {
       const fullPhone = phone.startsWith('+') ? phone : `+86${phone}`;
       const { error: otpError } = await sendPhoneOtp(fullPhone);
       if (otpError) {
-        setError(otpError.message || '验证码发送失败，请重试');
+        setError(otpError.message || t.auth.otpSendFailed);
       } else {
         setOtpSent(true);
         setCountdown(60);
       }
     } catch {
-      setError('验证码发送失败，请稍后重试');
+      setError(t.auth.otpSendError);
     } finally {
       setLoading(false);
     }
@@ -105,17 +107,17 @@ export default function Register() {
     e.preventDefault();
 
     if (!phoneUsername.trim()) {
-      setError('请输入用户名');
+      setError(t.auth.usernameRequired);
       return;
     }
 
     if (!otpCode.trim()) {
-      setError('请输入验证码');
+      setError(t.auth.otpRequired);
       return;
     }
 
     if (!agreed) {
-      setError('请阅读并同意服务条款和隐私政策');
+      setError(t.auth.termsRequired);
       return;
     }
 
@@ -126,12 +128,12 @@ export default function Register() {
       const fullPhone = phone.startsWith('+') ? phone : `+86${phone}`;
       const { error: authError } = await signUpWithPhone(fullPhone, otpCode, phoneUsername);
       if (authError) {
-        setError(authError.message || '注册失败，请重试');
+        setError(authError.message || t.auth.registerFailed);
       } else {
         navigate('/');
       }
     } catch {
-      setError('注册失败，请稍后重试');
+      setError(t.auth.registerFailed);
     } finally {
       setLoading(false);
     }
@@ -157,12 +159,12 @@ export default function Register() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-4xl lg:text-5xl font-display font-black tracking-tighter mb-6 leading-tight">
-              开启您的<br />
-              <span className="text-primary">进阶之旅</span>
+            <h2 className="text-4xl lg:text-5xl font-display font-black tracking-tighter mb-6 leading-tight whitespace-pre-line">
+              {t.home.appTitle.split('\n')[0]}<br />
+              <span className="text-primary">{t.home.appTitle.split('\n')[1]}</span>
             </h2>
             <p className="text-lg text-text-secondary mb-8 leading-relaxed">
-              加入 ServeMaster 社区，解锁专属训练计划，记录每一次挥拍，与全球网球爱好者共同成长。
+              {t.home.appDesc}
             </p>
 
             <div className="space-y-6">
@@ -171,8 +173,8 @@ export default function Register() {
                   <span className="material-symbols-outlined text-primary">model_training</span>
                 </div>
                 <div>
-                  <h4 className="font-bold text-white">海量训练库</h4>
-                  <p className="text-sm text-text-secondary">免费获取 50+ 职业级发球机训练方案。</p>
+                  <h4 className="font-bold text-white">{t.app.feat4Title}</h4>
+                  <p className="text-sm text-text-secondary">{t.app.feat4Desc}</p>
                 </div>
               </div>
 
@@ -181,8 +183,8 @@ export default function Register() {
                   <span className="material-symbols-outlined text-primary">insights</span>
                 </div>
                 <div>
-                  <h4 className="font-bold text-white">深度数据洞察</h4>
-                  <p className="text-sm text-text-secondary">可视化您的进步曲线与技术短板。</p>
+                  <h4 className="font-bold text-white">{t.app.feat3Title}</h4>
+                  <p className="text-sm text-text-secondary">{t.app.feat3Desc}</p>
                 </div>
               </div>
             </div>
@@ -199,9 +201,9 @@ export default function Register() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <div className="mb-8 md:mb-10">
-              <h1 className="text-3xl font-display font-bold mb-2">创建新账号</h1>
+              <h1 className="text-3xl font-display font-bold mb-2">{t.register.title}</h1>
               <p className="text-text-secondary">
-                已有账号？ <Link to="/login" className="text-primary hover:text-primary-hover font-bold transition-colors">立即登录</Link>
+                {t.register.hasAccount} <Link to="/login" className="text-primary hover:text-primary-hover font-bold transition-colors">{t.register.login}</Link>
               </p>
             </div>
 
@@ -216,7 +218,7 @@ export default function Register() {
                   }`}
               >
                 <span className="material-symbols-outlined text-[18px] mr-1.5">mail</span>
-                邮箱注册
+                {t.register.tabEmail}
               </button>
               <button
                 type="button"
@@ -227,7 +229,7 @@ export default function Register() {
                   }`}
               >
                 <span className="material-symbols-outlined text-[18px] mr-1.5">phone_android</span>
-                手机号注册
+                {t.register.tabPhone}
               </button>
             </div>
 
@@ -252,7 +254,7 @@ export default function Register() {
                 >
                   {/* Name Input */}
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-text-secondary mb-2">用户名</label>
+                    <label htmlFor="name" className="block text-sm font-medium text-text-secondary mb-2">{t.register.usernameLabel}</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <span className="material-symbols-outlined text-text-secondary">person</span>
@@ -263,7 +265,7 @@ export default function Register() {
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         className="w-full bg-surface-dark border border-surface-border rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder-text-secondary/50"
-                        placeholder="输入您的用户名"
+                        placeholder={t.register.usernamePlaceholder}
                         required
                         disabled={loading}
                       />
@@ -272,7 +274,7 @@ export default function Register() {
 
                   {/* Email Input */}
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-text-secondary mb-2">邮箱地址</label>
+                    <label htmlFor="email" className="block text-sm font-medium text-text-secondary mb-2">{t.register.emailLabel}</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <span className="material-symbols-outlined text-text-secondary">mail</span>
@@ -283,7 +285,7 @@ export default function Register() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="w-full bg-surface-dark border border-surface-border rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder-text-secondary/50"
-                        placeholder="输入您的邮箱"
+                        placeholder={t.register.emailPlaceholder}
                         required
                         disabled={loading}
                       />
@@ -292,7 +294,7 @@ export default function Register() {
 
                   {/* Password Input */}
                   <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-text-secondary mb-2">密码</label>
+                    <label htmlFor="password" className="block text-sm font-medium text-text-secondary mb-2">{t.register.passwordLabel}</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <span className="material-symbols-outlined text-text-secondary">lock</span>
@@ -303,7 +305,7 @@ export default function Register() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="w-full bg-surface-dark border border-surface-border rounded-xl py-3 pl-12 pr-12 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder-text-secondary/50"
-                        placeholder="设置密码 (至少 8 位)"
+                        placeholder={t.register.passwordPlaceholder}
                         required
                         disabled={loading}
                       />
@@ -319,7 +321,7 @@ export default function Register() {
 
                   {/* Confirm Password Input */}
                   <div>
-                    <label htmlFor="confirm-password" className="block text-sm font-medium text-text-secondary mb-2">确认密码</label>
+                    <label htmlFor="confirm-password" className="block text-sm font-medium text-text-secondary mb-2">{t.register.confirmPasswordLabel}</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <span className="material-symbols-outlined text-text-secondary">lock_reset</span>
@@ -330,7 +332,7 @@ export default function Register() {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         className="w-full bg-surface-dark border border-surface-border rounded-xl py-3 pl-12 pr-12 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder-text-secondary/50"
-                        placeholder="再次输入密码"
+                        placeholder={t.register.confirmPasswordPlaceholder}
                         required
                         disabled={loading}
                       />
@@ -352,7 +354,7 @@ export default function Register() {
                     </div>
                     <div className="ml-2 text-sm">
                       <label htmlFor="terms-email" className="text-text-secondary">
-                        我已阅读并同意 <button type="button" onClick={() => setModalType('terms')} className="text-primary hover:text-primary-hover transition-colors">服务条款</button> 和 <button type="button" onClick={() => setModalType('privacy')} className="text-primary hover:text-primary-hover transition-colors">隐私政策</button>
+                        {t.register.agreeTerms} <button type="button" onClick={() => setModalType('terms')} className="text-primary hover:text-primary-hover transition-colors">{t.register.termsLink}</button> {t.register.andText} <button type="button" onClick={() => setModalType('privacy')} className="text-primary hover:text-primary-hover transition-colors">{t.register.privacyLink}</button>
                       </label>
                     </div>
                   </div>
@@ -369,9 +371,9 @@ export default function Register() {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        注册中...
+                        {t.register.registering}
                       </>
-                    ) : '注 册'}
+                    ) : t.register.registerButton}
                   </button>
                 </motion.form>
               ) : (
@@ -387,7 +389,7 @@ export default function Register() {
                 >
                   {/* Username Input */}
                   <div>
-                    <label htmlFor="phone-name" className="block text-sm font-medium text-text-secondary mb-2">用户名</label>
+                    <label htmlFor="phone-name" className="block text-sm font-medium text-text-secondary mb-2">{t.register.usernameLabel}</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <span className="material-symbols-outlined text-text-secondary">person</span>
@@ -398,7 +400,7 @@ export default function Register() {
                         value={phoneUsername}
                         onChange={(e) => setPhoneUsername(e.target.value)}
                         className="w-full bg-surface-dark border border-surface-border rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder-text-secondary/50"
-                        placeholder="输入您的用户名"
+                        placeholder={t.register.usernamePlaceholder}
                         required
                         disabled={loading}
                       />
@@ -407,7 +409,7 @@ export default function Register() {
 
                   {/* Phone Input */}
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-text-secondary mb-2">手机号码</label>
+                    <label htmlFor="phone" className="block text-sm font-medium text-text-secondary mb-2">{t.register.phoneLabel}</label>
                     <div className="relative flex">
                       <div className="flex items-center bg-surface-dark border border-surface-border border-r-0 rounded-l-xl px-4 text-text-secondary text-sm font-medium shrink-0">
                         <span className="material-symbols-outlined text-[18px] mr-1.5">language</span>
@@ -419,7 +421,7 @@ export default function Register() {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                         className="w-full bg-surface-dark border border-surface-border rounded-r-xl py-3 px-4 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder-text-secondary/50"
-                        placeholder="输入手机号码"
+                        placeholder={t.register.phonePlaceholder}
                         maxLength={11}
                         required
                         disabled={loading}
@@ -429,7 +431,7 @@ export default function Register() {
 
                   {/* OTP Input */}
                   <div>
-                    <label htmlFor="reg-otp" className="block text-sm font-medium text-text-secondary mb-2">短信验证码</label>
+                    <label htmlFor="reg-otp" className="block text-sm font-medium text-text-secondary mb-2">{t.register.otpLabel}</label>
                     <div className="flex space-x-3">
                       <div className="relative flex-1">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -441,7 +443,7 @@ export default function Register() {
                           value={otpCode}
                           onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                           className="w-full bg-surface-dark border border-surface-border rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder-text-secondary/50 tracking-[0.3em] text-center font-mono"
-                          placeholder="输入 6 位验证码"
+                          placeholder={t.register.otpPlaceholder}
                           maxLength={6}
                           required
                           disabled={loading}
@@ -456,7 +458,7 @@ export default function Register() {
                           : 'bg-primary/15 border border-primary/40 text-primary hover:bg-primary/25 hover:border-primary/60'
                           } disabled:opacity-60`}
                       >
-                        {countdown > 0 ? `${countdown}s` : (otpSent ? '重新发送' : '获取验证码')}
+                        {countdown > 0 ? `${countdown}s` : (otpSent ? t.register.otpSent : t.register.sendOtp)}
                       </button>
                     </div>
                   </div>
@@ -476,7 +478,7 @@ export default function Register() {
                     </div>
                     <div className="ml-2 text-sm">
                       <label htmlFor="terms-phone" className="text-text-secondary">
-                        我已阅读并同意 <button type="button" onClick={() => setModalType('terms')} className="text-primary hover:text-primary-hover transition-colors">服务条款</button> 和 <button type="button" onClick={() => setModalType('privacy')} className="text-primary hover:text-primary-hover transition-colors">隐私政策</button>
+                        {t.register.agreeTerms} <button type="button" onClick={() => setModalType('terms')} className="text-primary hover:text-primary-hover transition-colors">{t.register.termsLink}</button> {t.register.andText} <button type="button" onClick={() => setModalType('privacy')} className="text-primary hover:text-primary-hover transition-colors">{t.register.privacyLink}</button>
                       </label>
                     </div>
                   </div>
@@ -493,9 +495,9 @@ export default function Register() {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        注册中...
+                        {t.register.registering}
                       </>
-                    ) : '注 册'}
+                    ) : t.register.registerButton}
                   </button>
                 </motion.form>
               )}
@@ -507,7 +509,7 @@ export default function Register() {
                 <div className="w-full border-t border-surface-border"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-background-dark text-text-secondary">或使用以下方式注册</span>
+                <span className="px-4 bg-background-dark text-text-secondary">{t.register.socialTitle}</span>
               </div>
             </div>
 

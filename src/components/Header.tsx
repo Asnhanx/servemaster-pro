@@ -2,19 +2,25 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { AnimatePresence, motion } from 'motion/react';
+import { useLanguage, LANGUAGES } from '../i18n';
+import CheckoutModal from './CheckoutModal';
 
 export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, loading, signOut } = useAuth();
+  const { lang, setLang, t } = useLanguage();
   const isLogin = location.pathname === '/login' || location.pathname === '/register';
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showLangMenu, setShowLangMenu] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   // Close mobile menu on route change
   useEffect(() => {
     setIsMenuOpen(false);
     setShowUserMenu(false);
+    setShowLangMenu(false);
   }, [location.pathname]);
 
   // Prevent body scroll when mobile menu is open
@@ -37,11 +43,13 @@ export default function Header() {
   };
 
   const navLinks = [
-    { to: '/', label: '核心功能' },
-    { to: '/app', label: 'App操控' },
-    { to: '/product', label: '技术规格' },
-    { to: '/support', label: '客户支持' },
+    { to: '/', label: t.header.features },
+    { to: '/app', label: t.header.appControl },
+    { to: '/product', label: t.header.specs },
+    { to: '/support', label: t.header.support },
   ];
+
+  const currentLang = LANGUAGES.find(l => l.code === lang);
 
   return (
     <nav className="fixed w-full z-50 bg-background-dark/80 backdrop-blur-md border-b border-surface-border">
@@ -67,12 +75,41 @@ export default function Header() {
                   </Link>
                 ))}
 
+                {/* Language Switcher */}
+                <div className="relative">
+                  <button
+                    onClick={() => { setShowLangMenu(!showLangMenu); setShowUserMenu(false); }}
+                    className="flex items-center space-x-1 text-sm font-medium text-text-secondary hover:text-white transition-colors"
+                  >
+                    <span className="material-symbols-outlined text-base">language</span>
+                    <span>{currentLang?.flag}</span>
+                  </button>
+                  {showLangMenu && (
+                    <>
+                      <div className="fixed inset-0 z-40" onClick={() => setShowLangMenu(false)}></div>
+                      <div className="absolute right-0 mt-2 w-44 bg-surface-dark border border-surface-border rounded-xl shadow-2xl z-50 overflow-hidden">
+                        {LANGUAGES.map(l => (
+                          <button
+                            key={l.code}
+                            onClick={() => { setLang(l.code); setShowLangMenu(false); }}
+                            className={`w-full px-4 py-2.5 text-left text-sm flex items-center space-x-2 transition-colors ${lang === l.code ? 'text-primary bg-primary/5' : 'text-text-secondary hover:text-white hover:bg-white/5'}`}
+                          >
+                            <span>{l.flag}</span>
+                            <span>{l.label}</span>
+                            {lang === l.code && <span className="material-symbols-outlined text-sm ml-auto">check</span>}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+
                 {!loading && (
                   user ? (
                     /* Logged in user menu */
                     <div className="relative">
                       <button
-                        onClick={() => setShowUserMenu(!showUserMenu)}
+                        onClick={() => { setShowUserMenu(!showUserMenu); setShowLangMenu(false); }}
                         className="flex items-center space-x-2 text-sm font-medium text-text-secondary hover:text-white transition-colors"
                       >
                         <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
@@ -89,7 +126,7 @@ export default function Header() {
                           <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)}></div>
                           <div className="absolute right-0 mt-2 w-56 bg-surface-dark border border-surface-border rounded-xl shadow-2xl z-50 overflow-hidden">
                             <div className="px-4 py-3 border-b border-surface-border">
-                              <p className="text-sm font-medium text-white truncate">{user.user_metadata?.username || '用户'}</p>
+                              <p className="text-sm font-medium text-white truncate">{user.user_metadata?.username || 'User'}</p>
                               <p className="text-xs text-text-secondary truncate">{user.email}</p>
                             </div>
                             <button
@@ -97,7 +134,7 @@ export default function Header() {
                               className="w-full px-4 py-3 text-left text-sm text-red-400 hover:bg-background-dark transition-colors flex items-center"
                             >
                               <span className="material-symbols-outlined text-sm mr-2">logout</span>
-                              退出登录
+                              {t.header.signOut}
                             </button>
                           </div>
                         </>
@@ -105,18 +142,20 @@ export default function Header() {
                     </div>
                   ) : (
                     /* Not logged in */
-                    <Link to="/login" className="text-sm font-medium text-text-secondary hover:text-white transition-colors">登录</Link>
+                    <Link to="/login" className="text-sm font-medium text-text-secondary hover:text-white transition-colors">{t.header.login}</Link>
                   )
                 )}
 
-                <Link to="/product" className="bg-primary text-black px-5 py-2 rounded-full text-sm font-bold hover:bg-primary-hover transition-colors shadow-[0_0_15px_rgba(204,255,0,0.3)]">
-                  立即购买
-                </Link>
+                <button onClick={() => setIsCheckoutOpen(true)} className="bg-primary text-black px-5 py-2 rounded-full text-sm font-bold hover:bg-primary-hover transition-colors shadow-[0_0_15px_rgba(204,255,0,0.3)]">
+                  {t.header.buyNow}
+                </button>
               </>
             ) : (
               <>
-                <Link to="/" className="text-sm font-medium text-text-secondary hover:text-white transition-colors">返回首页</Link>
-                <Link to="/support" className="text-sm font-medium text-text-secondary hover:text-white transition-colors">帮助中心</Link>
+                <Link to="/" className="text-sm font-medium text-text-secondary hover:text-white transition-colors">
+                  {t.header.backToHome}
+                </Link>
+                <Link to="/support" className="text-sm font-medium text-text-secondary hover:text-white transition-colors">{t.footer.helpCenter}</Link>
               </>
             )}
           </div>
@@ -126,7 +165,7 @@ export default function Header() {
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="text-text-secondary hover:text-white transition-colors"
-              aria-label={isMenuOpen ? '关闭菜单' : '打开菜单'}
+              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             >
               <span className="material-symbols-outlined text-[28px]">
                 {isMenuOpen ? 'close' : 'menu'}
@@ -155,13 +194,36 @@ export default function Header() {
                       key={link.to}
                       to={link.to}
                       className={`flex items-center px-4 py-3.5 rounded-xl text-base font-medium transition-all ${location.pathname === link.to
-                          ? 'text-primary bg-primary/10'
-                          : 'text-text-secondary hover:text-white hover:bg-white/5'
+                        ? 'text-primary bg-primary/10'
+                        : 'text-text-secondary hover:text-white hover:bg-white/5'
                         }`}
                     >
                       {link.label}
                     </Link>
                   ))}
+
+                  {/* Divider */}
+                  <div className="border-t border-surface-border my-4"></div>
+
+                  {/* Language Selector (Mobile) */}
+                  <div className="px-4 py-2">
+                    <p className="text-xs text-text-secondary mb-2 uppercase tracking-wider">
+                      <span className="material-symbols-outlined text-sm mr-1 align-middle">language</span>
+                      {t.header.language}
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {LANGUAGES.map(l => (
+                        <button
+                          key={l.code}
+                          onClick={() => setLang(l.code)}
+                          className={`px-3 py-2 rounded-lg text-sm flex items-center space-x-2 transition-colors ${lang === l.code ? 'text-primary bg-primary/10 border border-primary/30' : 'text-text-secondary bg-surface-dark hover:text-white border border-surface-border'}`}
+                        >
+                          <span>{l.flag}</span>
+                          <span>{l.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
                   {/* Divider */}
                   <div className="border-t border-surface-border my-4"></div>
@@ -177,7 +239,7 @@ export default function Header() {
                             </span>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-white truncate">{user.user_metadata?.username || '用户'}</p>
+                            <p className="text-sm font-medium text-white truncate">{user.user_metadata?.username || 'User'}</p>
                             <p className="text-xs text-text-secondary truncate">{user.email}</p>
                           </div>
                         </div>
@@ -186,7 +248,7 @@ export default function Header() {
                           className="w-full flex items-center px-4 py-3 rounded-xl text-sm text-red-400 hover:bg-red-500/10 transition-colors"
                         >
                           <span className="material-symbols-outlined text-sm mr-2">logout</span>
-                          退出登录
+                          {t.header.signOut}
                         </button>
                       </div>
                     ) : (
@@ -195,19 +257,19 @@ export default function Header() {
                         className="flex items-center px-4 py-3.5 rounded-xl text-base font-medium text-text-secondary hover:text-white hover:bg-white/5 transition-all"
                       >
                         <span className="material-symbols-outlined mr-3 text-xl">login</span>
-                        登录 / 注册
+                        {t.header.login}
                       </Link>
                     )
                   )}
 
                   {/* CTA Button */}
                   <div className="pt-4">
-                    <Link
-                      to="/product"
+                    <button
+                      onClick={() => { setIsMenuOpen(false); setIsCheckoutOpen(true); }}
                       className="block w-full bg-primary text-black px-5 py-3.5 rounded-xl text-base font-bold hover:bg-primary-hover transition-colors shadow-[0_0_15px_rgba(204,255,0,0.3)] text-center"
                     >
-                      立即购买
-                    </Link>
+                      {t.header.buyNow}
+                    </button>
                   </div>
                 </>
               ) : (
@@ -217,14 +279,14 @@ export default function Header() {
                     className="flex items-center px-4 py-3.5 rounded-xl text-base font-medium text-text-secondary hover:text-white hover:bg-white/5 transition-all"
                   >
                     <span className="material-symbols-outlined mr-3 text-xl">home</span>
-                    返回首页
+                    {t.header.backToHome}
                   </Link>
                   <Link
                     to="/support"
                     className="flex items-center px-4 py-3.5 rounded-xl text-base font-medium text-text-secondary hover:text-white hover:bg-white/5 transition-all"
                   >
                     <span className="material-symbols-outlined mr-3 text-xl">help</span>
-                    帮助中心
+                    {t.footer.helpCenter}
                   </Link>
                 </>
               )}
@@ -232,6 +294,7 @@ export default function Header() {
           </motion.div>
         )}
       </AnimatePresence>
+      <CheckoutModal isOpen={isCheckoutOpen} onClose={() => setIsCheckoutOpen(false)} />
     </nav>
   );
 }

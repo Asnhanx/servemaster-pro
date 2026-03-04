@@ -3,12 +3,14 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import LegalModal from '../components/LegalModal';
+import { useLanguage } from '../i18n';
 
 type AuthMode = 'email' | 'phone';
 
 export default function Login() {
   const navigate = useNavigate();
   const { signIn, sendPhoneOtp, verifyPhoneOtp, signInWithSocial } = useAuth();
+  const { t } = useLanguage();
 
   // Shared state
   const [authMode, setAuthMode] = useState<AuthMode>('email');
@@ -43,13 +45,13 @@ export default function Login() {
       const { error: authError } = await signIn(email, password);
       if (authError) {
         setError(authError.message === 'Invalid login credentials'
-          ? '邮箱或密码错误，请重试'
+          ? t.auth.invalidCredentials
           : authError.message);
       } else {
         navigate('/');
       }
     } catch {
-      setError('登录失败，请稍后重试');
+      setError(t.auth.loginFailed);
     } finally {
       setLoading(false);
     }
@@ -57,7 +59,7 @@ export default function Login() {
 
   const handleSendOtp = async () => {
     if (!phone.trim()) {
-      setError('请输入手机号码');
+      setError(t.auth.phoneRequired);
       return;
     }
     setError('');
@@ -67,13 +69,13 @@ export default function Login() {
       const fullPhone = phone.startsWith('+') ? phone : `+86${phone}`;
       const { error: otpError } = await sendPhoneOtp(fullPhone);
       if (otpError) {
-        setError(otpError.message || '验证码发送失败，请重试');
+        setError(otpError.message || t.auth.otpSendFailed);
       } else {
         setOtpSent(true);
         setCountdown(60);
       }
     } catch {
-      setError('验证码发送失败，请稍后重试');
+      setError(t.auth.otpSendError);
     } finally {
       setLoading(false);
     }
@@ -82,7 +84,7 @@ export default function Login() {
   const handlePhoneSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!otpCode.trim()) {
-      setError('请输入验证码');
+      setError(t.auth.otpRequired);
       return;
     }
     setError('');
@@ -92,12 +94,12 @@ export default function Login() {
       const fullPhone = phone.startsWith('+') ? phone : `+86${phone}`;
       const { error: authError } = await verifyPhoneOtp(fullPhone, otpCode);
       if (authError) {
-        setError(authError.message || '验证码错误，请重试');
+        setError(authError.message || t.auth.otpInvalid);
       } else {
         navigate('/');
       }
     } catch {
-      setError('登录失败，请稍后重试');
+      setError(t.auth.loginFailed);
     } finally {
       setLoading(false);
     }
@@ -124,11 +126,11 @@ export default function Login() {
             transition={{ duration: 0.8 }}
           >
             <h2 className="text-4xl lg:text-5xl font-display font-black tracking-tighter mb-6 leading-tight">
-              欢迎回到<br />
-              <span className="text-primary">ServeMaster</span> 社区
+              {t.auth.welcomeBack}<br />
+              <span className="text-primary">ServeMaster</span> {t.auth.community}
             </h2>
             <p className="text-lg text-text-secondary mb-8 leading-relaxed">
-              登录以管理您的设备、查看训练数据分析、下载最新职业训练计划，并与全球玩家分享您的进步。
+              {t.auth.welcomeDesc}
             </p>
 
             <div className="space-y-6">
@@ -137,8 +139,8 @@ export default function Login() {
                   <span className="material-symbols-outlined text-primary">cloud_sync</span>
                 </div>
                 <div>
-                  <h4 className="font-bold text-white">云端数据同步</h4>
-                  <p className="text-sm text-text-secondary">您的所有训练记录安全存储在云端。</p>
+                  <h4 className="font-bold text-white">{t.auth.cloudSync}</h4>
+                  <p className="text-sm text-text-secondary">{t.auth.cloudSyncDesc}</p>
                 </div>
               </div>
 
@@ -147,8 +149,8 @@ export default function Login() {
                   <span className="material-symbols-outlined text-primary">update</span>
                 </div>
                 <div>
-                  <h4 className="font-bold text-white">固件在线升级</h4>
-                  <p className="text-sm text-text-secondary">获取最新的发球算法与功能优化。</p>
+                  <h4 className="font-bold text-white">{t.auth.otaUpdate}</h4>
+                  <p className="text-sm text-text-secondary">{t.auth.otaUpdateDesc}</p>
                 </div>
               </div>
             </div>
@@ -165,9 +167,9 @@ export default function Login() {
             transition={{ duration: 0.6, delay: 0.2 }}
           >
             <div className="mb-8 md:mb-10">
-              <h1 className="text-3xl font-display font-bold mb-2">登录您的账号</h1>
+              <h1 className="text-3xl font-display font-bold mb-2">{t.login.title}</h1>
               <p className="text-text-secondary">
-                还没有账号？ <Link to="/register" className="text-primary hover:text-primary-hover font-bold transition-colors">立即注册</Link>
+                {t.login.noAccount} <Link to="/register" className="text-primary hover:text-primary-hover font-bold transition-colors">{t.login.register}</Link>
               </p>
             </div>
 
@@ -182,7 +184,7 @@ export default function Login() {
                   }`}
               >
                 <span className="material-symbols-outlined text-[18px] mr-1.5">mail</span>
-                邮箱登录
+                {t.login.tabEmail}
               </button>
               <button
                 type="button"
@@ -193,7 +195,7 @@ export default function Login() {
                   }`}
               >
                 <span className="material-symbols-outlined text-[18px] mr-1.5">phone_android</span>
-                手机号登录
+                {t.login.tabPhone}
               </button>
             </div>
 
@@ -218,7 +220,7 @@ export default function Login() {
                 >
                   {/* Email Input */}
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-text-secondary mb-2">邮箱地址</label>
+                    <label htmlFor="email" className="block text-sm font-medium text-text-secondary mb-2">{t.login.emailLabel}</label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                         <span className="material-symbols-outlined text-text-secondary">mail</span>
@@ -229,7 +231,7 @@ export default function Login() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="w-full bg-surface-dark border border-surface-border rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder-text-secondary/50"
-                        placeholder="输入您的邮箱"
+                        placeholder={t.login.emailPlaceholder}
                         required
                         disabled={loading}
                       />
@@ -239,8 +241,8 @@ export default function Login() {
                   {/* Password Input */}
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <label htmlFor="password" className="block text-sm font-medium text-text-secondary">密码</label>
-                      <a href="#" className="text-sm text-primary hover:text-primary-hover transition-colors">忘记密码？</a>
+                      <label htmlFor="password" className="block text-sm font-medium text-text-secondary">{t.login.passwordLabel}</label>
+                      <a href="#" className="text-sm text-primary hover:text-primary-hover transition-colors">{t.login.forgotPassword}</a>
                     </div>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -252,7 +254,7 @@ export default function Login() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="w-full bg-surface-dark border border-surface-border rounded-xl py-3 pl-12 pr-12 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder-text-secondary/50"
-                        placeholder="输入密码"
+                        placeholder={t.login.passwordPlaceholder}
                         required
                         disabled={loading}
                       />
@@ -275,7 +277,7 @@ export default function Login() {
                       className="h-4 w-4 bg-surface-dark border-surface-border rounded text-primary focus:ring-primary focus:ring-offset-background-dark"
                     />
                     <label htmlFor="remember-me" className="ml-2 block text-sm text-text-secondary">
-                      记住我
+                      {/* 记住我 */}
                     </label>
                   </div>
 
@@ -291,9 +293,9 @@ export default function Login() {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        登录中...
+                        {t.login.loggingIn}
                       </>
-                    ) : '登 录'}
+                    ) : t.login.loginButton}
                   </button>
                 </motion.form>
               ) : (
@@ -309,7 +311,7 @@ export default function Login() {
                 >
                   {/* Phone Input */}
                   <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-text-secondary mb-2">手机号码</label>
+                    <label htmlFor="phone" className="block text-sm font-medium text-text-secondary mb-2">{t.login.phoneLabel}</label>
                     <div className="relative flex">
                       <div className="flex items-center bg-surface-dark border border-surface-border border-r-0 rounded-l-xl px-4 text-text-secondary text-sm font-medium shrink-0">
                         <span className="material-symbols-outlined text-[18px] mr-1.5">language</span>
@@ -321,7 +323,7 @@ export default function Login() {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
                         className="w-full bg-surface-dark border border-surface-border rounded-r-xl py-3 px-4 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder-text-secondary/50"
-                        placeholder="输入手机号码"
+                        placeholder={t.login.phonePlaceholder}
                         maxLength={11}
                         required
                         disabled={loading}
@@ -331,7 +333,7 @@ export default function Login() {
 
                   {/* OTP Input */}
                   <div>
-                    <label htmlFor="otp" className="block text-sm font-medium text-text-secondary mb-2">短信验证码</label>
+                    <label htmlFor="otp" className="block text-sm font-medium text-text-secondary mb-2">{t.login.otpLabel}</label>
                     <div className="flex space-x-3">
                       <div className="relative flex-1">
                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -343,7 +345,7 @@ export default function Login() {
                           value={otpCode}
                           onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                           className="w-full bg-surface-dark border border-surface-border rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder-text-secondary/50 tracking-[0.3em] text-center font-mono"
-                          placeholder="输入 6 位验证码"
+                          placeholder={t.login.otpPlaceholder}
                           maxLength={6}
                           required
                           disabled={loading}
@@ -358,7 +360,7 @@ export default function Login() {
                           : 'bg-primary/15 border border-primary/40 text-primary hover:bg-primary/25 hover:border-primary/60'
                           } disabled:opacity-60`}
                       >
-                        {countdown > 0 ? `${countdown}s` : (otpSent ? '重新发送' : '获取验证码')}
+                        {countdown > 0 ? `${countdown}s` : (otpSent ? t.login.otpSent : t.login.sendOtp)}
                       </button>
                     </div>
                   </div>
@@ -375,9 +377,9 @@ export default function Login() {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        登录中...
+                        {t.login.loggingIn}
                       </>
-                    ) : '登 录'}
+                    ) : t.login.loginButton}
                   </button>
                 </motion.form>
               )}
@@ -389,7 +391,7 @@ export default function Login() {
                 <div className="w-full border-t border-surface-border"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-background-dark text-text-secondary">或使用以下方式登录</span>
+                <span className="px-4 bg-background-dark text-text-secondary">{t.login.socialTitle}</span>
               </div>
             </div>
 
@@ -407,7 +409,7 @@ export default function Login() {
 
             {/* Terms */}
             <p className="mt-8 text-center text-xs text-text-secondary">
-              登录即表示您同意我们的 <button type="button" onClick={() => setModalType('terms')} className="underline hover:text-white transition-colors">服务条款</button> 和 <button type="button" onClick={() => setModalType('privacy')} className="underline hover:text-white transition-colors">隐私政策</button>。
+              {t.register.agreeTerms} <button type="button" onClick={() => setModalType('terms')} className="underline hover:text-white transition-colors">{t.register.termsLink}</button> {t.register.andText} <button type="button" onClick={() => setModalType('privacy')} className="underline hover:text-white transition-colors">{t.register.privacyLink}</button>
             </p>
           </motion.div>
         </div>
