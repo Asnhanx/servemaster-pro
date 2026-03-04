@@ -27,7 +27,7 @@ export default function Home() {
             </span>
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-display font-black tracking-tighter mb-6 leading-tight">
               {t.home.heroTitle1}<br className="md:hidden" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-primary">{t.home.heroTitle2}</span>
+              <span className="text-gradient">{t.home.heroTitle2}</span>
             </h1>
             <p className="text-lg md:text-2xl text-text-secondary mb-10 max-w-2xl mx-auto font-light leading-relaxed">
               {t.home.heroDesc}
