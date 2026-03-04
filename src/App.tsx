@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/Header';
@@ -15,12 +16,21 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import AIChat from './pages/AIChat';
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
 function AppLayout() {
   const location = useLocation();
   const isChat = location.pathname === '/chat';
 
   return (
     <div className="min-h-screen flex flex-col bg-background-dark text-text-main">
+      <ScrollToTop />
       {!isChat && <Header />}
       <main className="flex-grow flex flex-col">
         <Routes>

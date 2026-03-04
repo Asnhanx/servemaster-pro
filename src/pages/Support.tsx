@@ -79,7 +79,7 @@ export default function Support() {
                             <input
                                 type="text"
                                 placeholder="搜索常见问题、使用手册或故障排除..."
-                                className="w-full bg-background-dark border border-surface-border rounded-full py-4 pl-12 pr-6 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                                className="w-full bg-background-dark border border-surface-border rounded-full py-3 md:py-4 pl-10 md:pl-12 pr-6 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm md:text-base"
                             />
                             <span className="material-symbols-outlined absolute left-4 top-1/2 transform -translate-y-1/2 text-text-secondary">search</span>
                         </div>
@@ -88,11 +88,11 @@ export default function Support() {
             </section>
 
             {/* Quick Links Section */}
-            <section className="py-16 relative overflow-hidden">
+            <section className="py-10 md:py-16 relative overflow-hidden">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {/* Link 1 */}
-                        <button type="button" onClick={() => setActiveModal('manual')} className="w-full text-left bg-surface-dark p-8 rounded-3xl border border-surface-border hover:border-primary/50 transition-colors group flex flex-col items-center text-center focus:outline-none">
+                        <button type="button" onClick={() => setActiveModal('manual')} className="w-full text-left bg-surface-dark p-6 md:p-8 rounded-3xl border border-surface-border hover:border-primary/50 transition-colors group flex flex-col items-center text-center focus:outline-none">
                             <div className="w-16 h-16 rounded-full bg-background-dark flex items-center justify-center mb-6 group-hover:bg-primary/10 transition-colors transform group-hover:scale-110 duration-300">
                                 <span className="material-symbols-outlined text-3xl text-primary">menu_book</span>
                             </div>
@@ -101,7 +101,7 @@ export default function Support() {
                         </button>
 
                         {/* Link 2 */}
-                        <button type="button" onClick={() => setActiveModal('troubleshooting')} className="w-full text-left bg-surface-dark p-8 rounded-3xl border border-surface-border hover:border-primary/50 transition-colors group flex flex-col items-center text-center focus:outline-none">
+                        <button type="button" onClick={() => setActiveModal('troubleshooting')} className="w-full text-left bg-surface-dark p-6 md:p-8 rounded-3xl border border-surface-border hover:border-primary/50 transition-colors group flex flex-col items-center text-center focus:outline-none">
                             <div className="w-16 h-16 rounded-full bg-background-dark flex items-center justify-center mb-6 group-hover:bg-primary/10 transition-colors transform group-hover:scale-110 duration-300">
                                 <span className="material-symbols-outlined text-3xl text-primary">build</span>
                             </div>
@@ -110,7 +110,7 @@ export default function Support() {
                         </button>
 
                         {/* Link 3 */}
-                        <button type="button" onClick={() => setActiveModal('warranty')} className="w-full text-left bg-surface-dark p-8 rounded-3xl border border-surface-border hover:border-primary/50 transition-colors group flex flex-col items-center text-center focus:outline-none">
+                        <button type="button" onClick={() => setActiveModal('warranty')} className="w-full text-left bg-surface-dark p-6 md:p-8 rounded-3xl border border-surface-border hover:border-primary/50 transition-colors group flex flex-col items-center text-center focus:outline-none">
                             <div className="w-16 h-16 rounded-full bg-background-dark flex items-center justify-center mb-6 group-hover:bg-primary/10 transition-colors transform group-hover:scale-110 duration-300">
                                 <span className="material-symbols-outlined text-3xl text-primary">verified</span>
                             </div>
@@ -122,18 +122,18 @@ export default function Support() {
             </section>
 
             {/* FAQ Section */}
-            <section className="py-24 bg-surface-dark relative">
+            <section className="py-16 md:py-24 bg-surface-dark relative">
                 <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-surface-border to-transparent"></div>
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center mb-16">
+                    <div className="text-center mb-10 md:mb-16">
                         <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">常见问题解答 (FAQ)</h2>
                     </div>
 
                     <div className="space-y-4">
                         {/* FAQ Item 1 */}
                         <div className="bg-background-dark rounded-2xl border border-surface-border overflow-hidden">
-                            <button onClick={() => setOpenFaq(openFaq === 0 ? null : 0)} className="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none hover:bg-white/[0.02] transition-colors">
-                                <span className="font-bold text-lg">如何连接 ServeMaster App？</span>
+                            <button onClick={() => setOpenFaq(openFaq === 0 ? null : 0)} className="w-full px-5 md:px-6 py-4 md:py-5 text-left flex justify-between items-center focus:outline-none hover:bg-white/[0.02] transition-colors">
+                                <span className="font-bold text-base md:text-lg">如何连接 ServeMaster App？</span>
                                 <span className={`material-symbols-outlined transition-transform duration-300 ${openFaq === 0 ? 'text-primary rotate-180' : 'text-text-secondary'}`}>expand_more</span>
                             </button>
                             <AnimatePresence initial={false}>
@@ -155,8 +155,8 @@ export default function Support() {
 
                         {/* FAQ Item 2 */}
                         <div className="bg-background-dark rounded-2xl border border-surface-border overflow-hidden">
-                            <button onClick={() => setOpenFaq(openFaq === 1 ? null : 1)} className="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none hover:bg-white/[0.02] transition-colors">
-                                <span className="font-bold text-lg">电池充满需要多长时间？</span>
+                            <button onClick={() => setOpenFaq(openFaq === 1 ? null : 1)} className="w-full px-5 md:px-6 py-4 md:py-5 text-left flex justify-between items-center focus:outline-none hover:bg-white/[0.02] transition-colors">
+                                <span className="font-bold text-base md:text-lg">电池充满需要多长时间？</span>
                                 <span className={`material-symbols-outlined transition-transform duration-300 ${openFaq === 1 ? 'text-primary rotate-180' : 'text-text-secondary'}`}>expand_more</span>
                             </button>
                             <AnimatePresence initial={false}>
@@ -178,8 +178,8 @@ export default function Support() {
 
                         {/* FAQ Item 3 */}
                         <div className="bg-background-dark rounded-2xl border border-surface-border overflow-hidden">
-                            <button onClick={() => setOpenFaq(openFaq === 2 ? null : 2)} className="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none hover:bg-white/[0.02] transition-colors">
-                                <span className="font-bold text-lg">机器卡球了怎么办？</span>
+                            <button onClick={() => setOpenFaq(openFaq === 2 ? null : 2)} className="w-full px-5 md:px-6 py-4 md:py-5 text-left flex justify-between items-center focus:outline-none hover:bg-white/[0.02] transition-colors">
+                                <span className="font-bold text-base md:text-lg">机器卡球了怎么办？</span>
                                 <span className={`material-symbols-outlined transition-transform duration-300 ${openFaq === 2 ? 'text-primary rotate-180' : 'text-text-secondary'}`}>expand_more</span>
                             </button>
                             <AnimatePresence initial={false}>
@@ -201,8 +201,8 @@ export default function Support() {
 
                         {/* FAQ Item 4 */}
                         <div className="bg-background-dark rounded-2xl border border-surface-border overflow-hidden">
-                            <button onClick={() => setOpenFaq(openFaq === 3 ? null : 3)} className="w-full px-6 py-5 text-left flex justify-between items-center focus:outline-none hover:bg-white/[0.02] transition-colors">
-                                <span className="font-bold text-lg">可以在雨天使用吗？</span>
+                            <button onClick={() => setOpenFaq(openFaq === 3 ? null : 3)} className="w-full px-5 md:px-6 py-4 md:py-5 text-left flex justify-between items-center focus:outline-none hover:bg-white/[0.02] transition-colors">
+                                <span className="font-bold text-base md:text-lg">可以在雨天使用吗？</span>
                                 <span className={`material-symbols-outlined transition-transform duration-300 ${openFaq === 3 ? 'text-primary rotate-180' : 'text-text-secondary'}`}>expand_more</span>
                             </button>
                             <AnimatePresence initial={false}>
@@ -232,16 +232,16 @@ export default function Support() {
             </section>
 
             {/* Contact Section */}
-            <section className="py-24 relative overflow-hidden">
+            <section className="py-16 md:py-24 relative overflow-hidden">
                 <div className="max-w-4xl mx-auto px-4 relative z-10">
                     <h2 className="text-3xl md:text-4xl font-display font-bold mb-6 text-center">没有找到您需要的答案？</h2>
-                    <p className="text-text-secondary mb-12 text-lg text-center">
+                    <p className="text-text-secondary mb-8 md:mb-12 text-lg text-center">
                         我们的技术支持团队随时准备为您提供帮助。
                     </p>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
                         {/* Contact form */}
-                        <div className="bg-surface-dark p-8 rounded-3xl border border-surface-border md:col-span-2">
+                        <div className="bg-surface-dark p-6 md:p-8 rounded-3xl border border-surface-border md:col-span-2">
                             <div className="flex items-center mb-6">
                                 <span className="material-symbols-outlined text-3xl text-primary mr-3">support_agent</span>
                                 <div>
@@ -328,7 +328,7 @@ export default function Support() {
                         </div>
 
                         {/* Quick contact options */}
-                        <div className="bg-surface-dark p-8 rounded-3xl border border-surface-border flex flex-col items-center">
+                        <div className="bg-surface-dark p-6 md:p-8 rounded-3xl border border-surface-border flex flex-col items-center">
                             <span className="material-symbols-outlined text-4xl text-white mb-4">smart_toy</span>
                             <h4 className="font-bold text-xl mb-2">在线客服</h4>
                             <p className="text-text-secondary text-sm mb-6">AI 智能客服 24 小时在线<br />提供即时技术支持</p>
@@ -337,7 +337,7 @@ export default function Support() {
                             </Link>
                         </div>
 
-                        <div className="bg-surface-dark p-8 rounded-3xl border border-surface-border flex flex-col items-center">
+                        <div className="bg-surface-dark p-6 md:p-8 rounded-3xl border border-surface-border flex flex-col items-center">
                             <span className="material-symbols-outlined text-4xl text-white mb-4">mail</span>
                             <h4 className="font-bold text-xl mb-2">发送邮件</h4>
                             <p className="text-text-secondary text-sm mb-6">我们将在 24 小时内<br />回复您的邮件</p>

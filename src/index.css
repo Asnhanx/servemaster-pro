@@ -58,4 +58,19 @@ body {
   font-family: var(--font-body);
   background-color: var(--color-background-dark);
   color: var(--color-text-main);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Mobile touch optimization */
+button, a, input, textarea, select {
+  touch-action: manipulation;
+}
+
+/* Custom scrollbar for mobile modals */
+@media (max-width: 640px) {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 2px;
+  }
 }

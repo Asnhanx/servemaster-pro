@@ -157,14 +157,14 @@ export default function Login() {
       </div>
 
       {/* Right Section - Login Form */}
-      <div className="w-full md:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-background-dark">
+      <div className="w-full md:w-1/2 flex items-center justify-center p-6 sm:p-12 lg:p-24 bg-background-dark">
         <div className="w-full max-w-md">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <div className="mb-10">
+            <div className="mb-8 md:mb-10">
               <h1 className="text-3xl font-display font-bold mb-2">登录您的账号</h1>
               <p className="text-text-secondary">
                 还没有账号？ <Link to="/register" className="text-primary hover:text-primary-hover font-bold transition-colors">立即注册</Link>

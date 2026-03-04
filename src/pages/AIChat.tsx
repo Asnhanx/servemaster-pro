@@ -233,13 +233,13 @@ export default function AIChat() {
                         {/* Rate limit badge */}
                         {rateLimitInfo && (
                             <div className={`text-xs px-3 py-1.5 rounded-full border ${rateLimitInfo.remaining <= 0
-                                    ? 'border-red-500/30 bg-red-500/10 text-red-400'
-                                    : rateLimitInfo.remaining <= 3
-                                        ? 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400'
-                                        : 'border-surface-border bg-background-dark text-text-secondary'
+                                ? 'border-red-500/30 bg-red-500/10 text-red-400'
+                                : rateLimitInfo.remaining <= 3
+                                    ? 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400'
+                                    : 'border-surface-border bg-background-dark text-text-secondary'
                                 }`}>
                                 剩余 {rateLimitInfo.remaining}/{rateLimitInfo.limit} 次
-                                {rateLimitInfo.isGuest && <span className="ml-1 opacity-60">· 游客</span>}
+                                {rateLimitInfo.isGuest && <span className="ml-1 opacity-60 hidden sm:inline">· 游客</span>}
                             </div>
                         )}
                         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -261,7 +261,7 @@ export default function AIChat() {
                                 transition={{ duration: 0.3 }}
                                 className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                             >
-                                <div className={`flex items-start space-x-3 max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                                <div className={`flex items-start space-x-3 max-w-[92%] sm:max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
                                     {/* Avatar */}
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'assistant' ? 'bg-primary/10' : 'bg-white/10'
                                         }`}>
@@ -273,8 +273,8 @@ export default function AIChat() {
 
                                     {/* Bubble */}
                                     <div className={`px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${msg.role === 'user'
-                                            ? 'bg-primary text-black rounded-tr-sm'
-                                            : 'bg-surface-dark border border-surface-border text-text-main rounded-tl-sm'
+                                        ? 'bg-primary text-black rounded-tr-sm'
+                                        : 'bg-surface-dark border border-surface-border text-text-main rounded-tl-sm'
                                         }`}>
                                         {msg.content}
                                         {msg.role === 'assistant' && msg.content === '' && isStreaming && (
@@ -340,7 +340,7 @@ export default function AIChat() {
                             <span className="material-symbols-outlined text-xl">send</span>
                         </button>
                     </div>
-                    <p className="text-xs text-text-secondary/50 mt-2 text-center">
+                    <p className="text-xs text-text-secondary/50 mt-2 text-center hidden sm:block">
                         AI 回复仅供参考，如需更专业的帮助，请提交工单联系人工客服。
                     </p>
                 </form>

@@ -123,7 +123,7 @@ export default function LegalModal({ isOpen, onClose, type }: LegalModalProps) {
                             </div>
 
                             {/* Content (Scrollable) */}
-                            <div className="p-6 overflow-y-auto font-body flex-grow custom-scrollbar">
+                            <div className="p-5 sm:p-6 overflow-y-auto font-body flex-grow custom-scrollbar">
                                 {type === 'terms' ? <TermsContent /> : <PrivacyContent />}
                             </div>
 

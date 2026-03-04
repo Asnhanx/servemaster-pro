@@ -104,7 +104,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
             <div className="p-6 overflow-y-auto flex-grow">
               {step === 'cart' && (
                 <div className="space-y-6">
-                  <div className="flex items-center space-x-4 bg-background-dark p-4 rounded-2xl border border-surface-border">
+                  <div className="flex items-center space-x-3 sm:space-x-4 bg-background-dark p-4 rounded-2xl border border-surface-border">
                     <div className="w-24 h-24 bg-surface-dark rounded-xl overflow-hidden shrink-0">
                       <img src="https://images.unsplash.com/photo-1522778147829-047360bdc7f6?q=80&w=200&auto=format&fit=crop" alt="ServeMaster Pro" className="w-full h-full object-cover opacity-80" referrerPolicy="no-referrer" />
                     </div>
@@ -262,7 +262,7 @@ export default function CheckoutModal({ isOpen, onClose }: CheckoutModalProps) {
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-surface-border bg-background-dark/50 flex justify-end space-x-4">
+            <div className="p-6 border-t border-surface-border bg-background-dark/50 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
               {step !== 'success' && (
                 <button
                   onClick={onClose}

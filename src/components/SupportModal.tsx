@@ -135,7 +135,7 @@ export default function SupportModal({ isOpen, onClose, type }: SupportModalProp
     const WarrantyContent = () => (
         <div className="space-y-6 text-sm text-text-secondary leading-relaxed">
 
-            <div className="flex items-center space-x-4 mb-6">
+            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mb-6">
                 <div className="flex-1 bg-surface-border p-4 rounded-xl text-center">
                     <div className="text-white font-bold text-lg mb-1">12个月</div>
                     <div className="text-xs">主机硬件保修</div>
@@ -200,7 +200,7 @@ export default function SupportModal({ isOpen, onClose, type }: SupportModalProp
                                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-4">
                                     <span className="material-symbols-outlined text-primary">{getIcon()}</span>
                                 </div>
-                                <h2 className="text-2xl font-display font-bold text-white flex-1">{getTitle()}</h2>
+                                <h2 className="text-xl sm:text-2xl font-display font-bold text-white flex-1">{getTitle()}</h2>
                                 <button
                                     onClick={onClose}
                                     className="text-text-secondary hover:text-white transition-colors rounded-full p-2 hover:bg-white/5"
@@ -217,7 +217,7 @@ export default function SupportModal({ isOpen, onClose, type }: SupportModalProp
                             </div>
 
                             {/* Footer */}
-                            <div className="px-6 py-4 border-t border-surface-border bg-background-dark/50 rounded-b-2xl flex justify-between items-center">
+                            <div className="px-6 py-4 border-t border-surface-border bg-background-dark/50 rounded-b-2xl flex flex-col sm:flex-row gap-3 sm:justify-between items-center">
                                 <p className="text-xs text-text-secondary">如需进一步帮助，请使用下方的"提交工单"系统。</p>
                                 <button
                                     onClick={onClose}

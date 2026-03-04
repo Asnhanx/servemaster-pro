@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
+import CheckoutModal from '../components/CheckoutModal';
 
 export default function Home() {
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   return (
     <div className="bg-background-dark text-text-main font-body pt-16">
       {/* Hero Section */}
@@ -11,7 +14,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/80 to-transparent"></div>
         </div>
 
-        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto mt-20">
+        <div className="relative z-10 text-center px-4 max-w-5xl mx-auto mt-10 md:mt-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -28,9 +31,9 @@ export default function Home() {
               ServeMaster Pro 结合航空级电机与 AI 算法，提供毫米级落点控制。便携设计，随时随地开启专业训练。
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-6">
-              <Link to="/product" className="w-full sm:w-auto bg-primary text-black px-8 py-4 rounded-full text-lg font-bold hover:bg-primary-hover transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(204,255,0,0.4)] text-center">
+              <button onClick={() => setIsCheckoutOpen(true)} className="w-full sm:w-auto bg-primary text-black px-8 py-4 rounded-full text-lg font-bold hover:bg-primary-hover transition-all transform hover:scale-105 shadow-[0_0_20px_rgba(204,255,0,0.4)] text-center">
                 立即购买 ¥8,999
-              </Link>
+              </button>
               <Link to="/product" className="w-full sm:w-auto flex items-center justify-center space-x-2 text-white px-8 py-4 rounded-full text-lg font-medium border border-surface-border hover:bg-surface-border transition-colors">
                 <span className="material-symbols-outlined">play_circle</span>
                 <span>观看演示</span>
@@ -45,10 +48,10 @@ export default function Home() {
       </section>
 
       {/* Core Features */}
-      <section className="py-24 bg-surface-dark relative overflow-hidden">
+      <section className="py-16 md:py-24 bg-surface-dark relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-20">
+          <div className="text-center mb-12 md:mb-20">
             <h2 className="text-3xl md:text-5xl font-display font-bold mb-6">突破性的核心技术</h2>
             <p className="text-text-secondary text-lg max-w-2xl mx-auto">
               每一处细节都为极致的训练体验而设计。
@@ -57,11 +60,11 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Feature 1 */}
-            <div className="bg-background-dark p-8 rounded-3xl border border-surface-border hover:border-primary/50 transition-colors group">
+            <div className="bg-background-dark p-6 md:p-8 rounded-3xl border border-surface-border hover:border-primary/50 transition-colors group">
               <div className="w-16 h-16 rounded-2xl bg-surface-border flex items-center justify-center mb-8 group-hover:bg-primary/10 transition-colors">
                 <span className="material-symbols-outlined text-3xl text-primary">speed</span>
               </div>
-              <h3 className="text-2xl font-bold mb-4">140km/h 极速发球</h3>
+              <h3 className="text-xl md:text-2xl font-bold mb-4">140km/h 极速发球</h3>
               <p className="text-text-secondary leading-relaxed mb-6">
                 搭载双无刷电机，提供职业级球速与强劲上旋/下旋，真实模拟对手击球。
               </p>
@@ -73,7 +76,7 @@ export default function Home() {
               <div className="w-16 h-16 rounded-2xl bg-surface-border flex items-center justify-center mb-8 group-hover:bg-primary/10 transition-colors">
                 <span className="material-symbols-outlined text-3xl text-primary">my_location</span>
               </div>
-              <h3 className="text-2xl font-bold mb-4">AI 智能落点控制</h3>
+              <h3 className="text-xl md:text-2xl font-bold mb-4">AI 智能落点控制</h3>
               <p className="text-text-secondary leading-relaxed mb-6">
                 内置高精度传感器，支持 6 点随机落点及自定义训练路线，指哪打哪。
               </p>
@@ -85,7 +88,7 @@ export default function Home() {
               <div className="w-16 h-16 rounded-2xl bg-surface-border flex items-center justify-center mb-8 group-hover:bg-primary/10 transition-colors">
                 <span className="material-symbols-outlined text-3xl text-primary">battery_charging_full</span>
               </div>
-              <h3 className="text-2xl font-bold mb-4">6小时超长续航</h3>
+              <h3 className="text-xl md:text-2xl font-bold mb-4">6小时超长续航</h3>
               <p className="text-text-secondary leading-relaxed mb-6">
                 大容量锂电池，支持快充技术。告别电源线束缚，随时随地畅快挥拍。
               </p>
@@ -96,7 +99,7 @@ export default function Home() {
       </section>
 
       {/* App Integration */}
-      <section className="py-24 bg-background-dark">
+      <section className="py-16 md:py-24 bg-background-dark">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center gap-16">
             <div className="lg:w-1/2">
@@ -143,13 +146,13 @@ export default function Home() {
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 bg-surface-dark">
+      <section className="py-16 md:py-24 bg-surface-dark">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">来自专业玩家的认可</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-background-dark p-8 rounded-3xl border border-surface-border">
+            <div className="bg-background-dark p-6 md:p-8 rounded-3xl border border-surface-border">
               <div className="flex items-center mb-6">
                 <img src="https://images.unsplash.com/photo-1560012057-4372e14c5085?q=80&w=60&auto=format&fit=crop" alt="User" className="w-12 h-12 rounded-full mr-4" referrerPolicy="no-referrer" />
                 <div>
@@ -157,7 +160,7 @@ export default function Home() {
                   <p className="text-text-secondary text-sm">ITF 认证教练</p>
                 </div>
               </div>
-              <p className="text-lg italic text-text-secondary">
+              <p className="text-base md:text-lg italic text-text-secondary">
                 "ServeMaster Pro 的旋转和球速非常接近真实比赛。它的便携性让我的教学工作轻松了许多，学生们也更喜欢这种高效的训练方式。"
               </p>
             </div>
@@ -178,19 +181,23 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 relative overflow-hidden">
+      <section className="py-16 md:py-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-primary/10"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/20 blur-[120px] rounded-full"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] md:w-[800px] md:h-[800px] bg-primary/20 blur-[120px] rounded-full"></div>
         <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-4xl md:text-6xl font-display font-black mb-6">准备好提升你的比赛了吗？</h2>
           <p className="text-xl text-text-secondary mb-10">
             现在订购，享受 30 天无理由退换及 2 年官方质保。
           </p>
-          <Link to="/product" className="inline-block bg-primary text-black px-10 py-5 rounded-full text-xl font-bold hover:bg-primary-hover transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(204,255,0,0.5)]">
+          <button onClick={() => setIsCheckoutOpen(true)} className="bg-primary text-black px-10 py-5 rounded-full text-xl font-bold hover:bg-primary-hover transition-all transform hover:scale-105 shadow-[0_0_30px_rgba(204,255,0,0.5)]">
             立即购买 ServeMaster Pro
-          </Link>
+          </button>
         </div>
       </section>
+      <CheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+      />
     </div>
   );
 }
