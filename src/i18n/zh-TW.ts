@@ -93,7 +93,7 @@ export const zhTW: Translations = deepMerge(zhCN, {
     login: { title: '登入您的帳號', noAccount: '還沒有帳號？', register: '立即註冊', tabEmail: '電子郵件登入', tabPhone: '手機號登入', loginButton: '登入', loggingIn: '登入中...', socialTitle: '或透過以下方式登入' },
     register: { title: '建立新帳號', hasAccount: '已有帳號？', login: '立即登入', tabEmail: '電子郵件註冊', tabPhone: '手機號註冊', registerButton: '註冊', registering: '註冊中...', socialTitle: '或透過以下方式註冊' },
     aiChat: { title: 'ServeMaster AI 助手', statusOnline: '線上', disclaimer: 'AI 回覆僅供參考，如需更專業的幫助，請提交工單聯繫人工客服。', goToLogin: '去登錄' },
-    checkout: { cartTitle: '確認訂單', paymentTitle: '選擇付款方式', successTitle: '付款成功', loginPrompt: '請先登入後再進行購買', goLogin: '去登入', cancel: '取消', checkout: '去結算', payAmount: '付款金額', processing: '處理中...', securePayPrefix: '安全付款', done: '完成' },
+    checkout: { titleCart: '確認訂單', titlePayment: '選擇付款方式', titleSuccess: '付款成功', successTitle: '付款成功', loginRequired: '請先登入後再進行購買', goToLogin: '去登入', cancel: '取消', proceedToCheckout: '去結算', payAmount: '付款金額', processing: '處理中...', paySecurely: '安全付款 {amount}', orderFailed: '訂單建立失敗，請稍後重試。', done: '完成' },
     legal: { closeButton: '我已瞭解並關閉' },
     auth: {
         invalidCredentials: '信箱或密碼錯誤，請重試',
